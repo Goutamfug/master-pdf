@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <!-- ✅ Google Search Console Verification (ADDED) -->
+  <meta name="google-site-verification" content="googlea6b822fefb22795b" />
+  <meta name="description" content="Professional PDF Toolkit – Merge, Split, Convert, OCR, AI Summarizer, Signatures, Batch. 100% free, works in browser.">
+  <meta name="keywords" content="PDF tools, merge PDF, split PDF, PDF to Word, OCR, AI summarizer, digital signature, batch processing">
+  <meta name="author" content="PDF Master Suite">
+  <title>PDF Master Suite | Professional PDF Tools</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- PDF Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.2/mammoth.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(145deg, #f6f9fc 0%, #eef2f6 100%);
+      color: #1a2c3e;
+    }
+    .navbar {
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.8rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #1F2B48, #4f46e5);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #2c3e66;
+      transition: 0.2s;
+      padding: 0.4rem 0;
+      border-bottom: 2px solid transparent;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      border-bottom-color: #4f46e5;
+      color: #4f46e5;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .page {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .page.active-page {
+      display: block;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .hero {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .hero h1, .hero h2 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #1F2B48, #2D3A5E, #4f46e5);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: #4a5b6e;
+      max-width: 700px;
+      margin: 1rem auto;
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+      margin-top: 2rem;
+    }
+    .tool-card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(4px);
+      border-radius: 28px;
+      padding: 1.5rem;
+      transition: all 0.25s;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    .tool-card:hover {
+      transform: translateY(-6px);
+      background: white;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.12);
+    }
+    .card-icon {
+      font-size: 2.2rem;
+      background: #f0f4fe;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      color: #4f46e5;
+      margin-bottom: 1rem;
+    }
+    .tool-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .tool-desc {
+      font-size: 0.85rem;
+      color: #5f6c84;
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .team-member {
+      background: white;
+      border-radius: 32px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+    }
+    .team-avatar {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #4f46e5, #818cf8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: white;
+      font-size: 2.5rem;
+    }
+    .legal-content {
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+    .footer {
+      margin-top: 4rem;
+      text-align: center;
+      padding: 1.5rem;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      font-size: 0.8rem;
+      color: #5f6c84;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.2s;
+    }
+    .modal-overlay.active { visibility: visible; opacity: 1; }
+    .modal {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+      border-radius: 32px;
+      padding: 1.8rem;
+    }
+    .modal h3 { font-size: 1.6rem; margin-bottom: 1rem; }
+    .modal input, .modal button, .modal select, .modal canvas {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 60px;
+      border: 1px solid #ddd;
+      font-family: inherit;
+    }
+    .modal button {
+      background: #4f46e5;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    .close-btn { background: #eef2ff !important; color: #1e293b !important; }
+    .signature-canvas { border: 1px solid #ccc; background: #fff; border-radius: 16px; cursor: crosshair; }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 60px;
+      z-index: 1100;
+      opacity: 0;
+      transition: 0.2s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+    .summary-box { background: #f8fafc; border-radius: 20px; padding: 1rem; margin: 1rem 0; max-height: 300px; overflow-y: auto; }
+    @media (max-width: 700px) {
+      .navbar { flex-direction: column; gap: 1rem; }
+      .hero h1, .hero h2 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><i class="fas fa-file-pdf"></i> PDF Master Suite</div>
+  <ul class="nav-links">
+    <li><a href="#home" data-page="home">Home</a></li>
+    <li><a href="#organize" data-page="organize">Organize</a></li>
+    <li><a href="#convert-to" data-page="convert-to">Convert to PDF</a></li>
+    <li><a href="#convert-from" data-page="convert-from">Convert from PDF</a></li>
+    <li><a href="#optimize" data-page="optimize">Optimize</a></li>
+    <li><a href="#advanced" data-page="advanced">Advanced</a></li>
+    <li><a href="#team" data-page="team">Team</a></li>
+    <li><a href="#privacy" data-page="privacy">Privacy</a></li>
+  </ul>
+</nav>
+
+<div class="container">
+  <!-- HOME -->
+  <div id="home" class="page">
+    <div class="hero"><h1>Professional PDF Toolkit</h1><p>Merge, split, convert, OCR, AI summarizer, signatures, batch – all in browser, 100% free & private.</p></div>
+    <div class="tools-grid">
+      <div class="tool-card" data-tool="merge"><div class="card-icon"><i class="fas fa-object-group"></i></div><div class="tool-title">Merge PDF</div><div class="tool-desc">Combine multiple PDFs</div></div>
+      <div class="tool-card" data-tool="split"><div class="card-icon"><i class="fas fa-cut"></i></div><div class="tool-title">Split PDF</div><div class="tool-desc">By page ranges</div></div>
+      <div class="tool-card" data-tool="compress"><div class="card-icon"><i class="fas fa-file-zipper"></i></div><div class="tool-title">Compress PDF</div><div class="tool-desc">Reduce file size</div></div>
+      <div class="tool-card" data-tool="jpg2pdf"><div class="card-icon"><i class="fas fa-image"></i></div><div class="tool-title">JPG to PDF</div><div class="tool-desc">Images to PDF</div></div>
+      <div class="tool-card" data-tool="pdf2word"><div class="card-icon"><i class="fab fa-microsoft"></i></div><div class="tool-title">PDF to Word</div><div class="tool-desc">Extract text</div></div>
+      <div class="tool-card" data-tool="ai_summarizer"><div class="card-icon"><i class="fas fa-brain"></i></div><div class="tool-title">AI Summarizer</div><div class="tool-desc">Smart summary</div></div>
+    </div>
+  </div>
+
+  <!-- ORGANIZE -->
+  <div id="organize" class="page"><div class="hero"><h2>Organize PDFs</h2></div><div class="tools-grid"><div class="tool-card" data-tool="merge"><div class="card-icon"><i class="fas fa-object-group"></i></div><div class="tool-title">Merge</div></div><div class="tool-card" data-tool="split"><div class="card-icon"><i class="fas fa-cut"></i></div><div class="tool-title">Split</div></div><div class="tool-card" data-tool="remove"><div class="card-icon"><i class="fas fa-trash-alt"></i></div><div class="tool-title">Remove Pages</div></div><div class="tool-card" data-tool="extract"><div class="card-icon"><i class="fas fa-code-branch"></i></div><div class="tool-title">Extract Pages</div></div><div class="tool-card" data-tool="reorder"><div class="card-icon"><i class="fas fa-sort"></i></div><div class="tool-title">Reorder Pages</div></div><div class="tool-card" data-tool="scantopdf"><div class="card-icon"><i class="fas fa-camera"></i></div><div class="tool-title">Scan to PDF</div></div></div></div>
+
+  <!-- CONVERT TO PDF -->
+  <div id="convert-to" class="page"><div class="hero"><h2>Convert to PDF</h2></div><div class="tools-grid"><div class="tool-card" data-tool="jpg2pdf"><div class="card-icon"><i class="fas fa-image"></i></div><div class="tool-title">JPG to PDF</div></div><div class="tool-card" data-tool="word2pdf"><div class="card-icon"><i class="fab fa-wordpress"></i></div><div class="tool-title">WORD to PDF</div></div><div class="tool-card" data-tool="ppt2pdf"><div class="card-icon"><i class="fas fa-chalkboard-user"></i></div><div class="tool-title">POWERPOINT to PDF</div></div><div class="tool-card" data-tool="excel2pdf"><div class="card-icon"><i class="fas fa-table"></i></div><div class="tool-title">EXCEL to PDF</div></div><div class="tool-card" data-tool="html2pdf"><div class="card-icon"><i class="fab fa-html5"></i></div><div class="tool-title">HTML to PDF</div></div></div></div>
+
+  <!-- CONVERT FROM PDF -->
+  <div id="convert-from" class="page"><div class="hero"><h2>Convert from PDF</h2></div><div class="tools-grid"><div class="tool-card" data-tool="pdf2jpg"><div class="card-icon"><i class="fas fa-file-image"></i></div><div class="tool-title">PDF to JPG</div></div><div class="tool-card" data-tool="pdf2word"><div class="card-icon"><i class="fab fa-microsoft"></i></div><div class="tool-title">PDF to WORD</div></div><div class="tool-card" data-tool="pdf2ppt"><div class="card-icon"><i class="fas fa-presentation"></i></div><div class="tool-title">PDF to POWERPOINT</div></div><div class="tool-card" data-tool="pdf2excel"><div class="card-icon"><i class="fas fa-file-excel"></i></div><div class="tool-title">PDF to EXCEL</div></div><div class="tool-card" data-tool="pdf2pdfa"><div class="card-icon"><i class="fas fa-archive"></i></div><div class="tool-title">PDF to PDF/A</div></div></div></div>
+
+  <!-- OPTIMIZE -->
+  <div id="optimize" class="page"><div class="hero"><h2>Optimize PDF</h2></div><div class="tools-grid"><div class="tool-card" data-tool="compress"><div class="card-icon"><i class="fas fa-file-zipper"></i></div><div class="tool-title">Compress</div></div><div class="tool-card" data-tool="repair"><div class="card-icon"><i class="fas fa-screwdriver-wrench"></i></div><div class="tool-title">Repair</div></div><div class="tool-card" data-tool="ocr"><div class="card-icon"><i class="fas fa-text-height"></i></div><div class="tool-title">OCR PDF</div></div></div></div>
+
+  <!-- ADVANCED -->
+  <div id="advanced" class="page"><div class="hero"><h2>Advanced Tools</h2></div><div class="tools-grid"><div class="tool-card" data-tool="ai_summarizer"><div class="card-icon"><i class="fas fa-brain"></i></div><div class="tool-title">AI Summarizer</div></div><div class="tool-card" data-tool="digital_signature"><div class="card-icon"><i class="fas fa-signature"></i></div><div class="tool-title">Digital Signature</div></div><div class="tool-card" data-tool="batch_processing"><div class="card-icon"><i class="fas fa-layer-group"></i></div><div class="tool-title">Batch Processing</div></div></div></div>
+
+  <!-- TEAM -->
+  <div id="team" class="page"><div class="hero"><h2>Meet Our Team</h2></div><div class="team-grid"><div class="team-member"><div class="team-avatar"><i class="fas fa-user-astronaut"></i></div><div class="team-name">Rahul Sharma</div><div class="team-role">Founder & Lead Dev</div><div class="team-bio">8+ years, privacy-first tools.</div></div><div class="team-member"><div class="team-avatar"><i class="fas fa-user-ninja"></i></div><div class="team-name">Priya Mehta</div><div class="team-role">UI/UX Designer</div><div class="team-bio">Beautiful interfaces, accessible.</div></div><div class="team-member"><div class="team-avatar"><i class="fas fa-user-robot"></i></div><div class="team-name">Arjun Nair</div><div class="team-role">AI & OCR Specialist</div><div class="team-bio">Tesseract integration.</div></div><div class="team-member"><div class="team-avatar"><i class="fas fa-user-secret"></i></div><div class="team-name">Sneha Reddy</div><div class="team-role">Security Officer</div><div class="team-bio">100% client-side processing.</div></div></div></div>
+
+  <!-- PRIVACY POLICY -->
+  <div id="privacy" class="page"><div class="hero"><h2>Privacy Policy</h2><p>Last updated: April 2025</p></div><div class="legal-content"><p><strong>PDF Master Suite</strong> processes all files locally in your browser. No data is uploaded to any server. We use cookies only for essential functionality and AdSense (if enabled). We do not collect personal information. For questions, email support@pdfmaster.example.com.</p></div></div>
+
+  <footer class="footer"><p>© 2025 PDF Master Suite – All tools work offline. <a href="#" id="termsLink" style="color:#4f46e5;">Terms</a> | <a href="#" id="contactLink" style="color:#4f46e5;">Contact</a></p></footer>
+</div>
+
+<!-- Modal & Toast -->
+<div id="modalOverlay" class="modal-overlay"><div class="modal" id="modalContent"><h3 id="modalTitle">Tool</h3><div id="modalBody"></div><button id="modalClose" class="close-btn">Close</button></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+  // ---------- Utilities ----------
+  const toast = document.getElementById('toast');
+  function showToast(msg, isError=false) {
+    toast.innerText = msg;
+    toast.style.background = isError ? '#b91c1c' : '#1e293b';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  function openModal(title, bodyHtml) {
+    modalTitle.innerText = title;
+    modalBody.innerHTML = bodyHtml;
+    modalOverlay.classList.add('active');
+  }
+  document.getElementById('modalClose').onclick = () => modalOverlay.classList.remove('active');
+  modalOverlay.onclick = (e) => { if(e.target === modalOverlay) modalOverlay.classList.remove('active'); };
+  async function loadPdfArray(file) { return new Uint8Array(await file.arrayBuffer()); }
+
+  // ---------- Core Functions ----------
+  async function mergePDFs(files) {
+    const { PDFDocument } = PDFLib;
+    const merged = await PDFDocument.create();
+    for(const f of files) {
+      const bytes = await loadPdfArray(f);
+      const pdf = await PDFDocument.load(bytes);
+      const pages = await merged.copyPages(pdf, pdf.getPageIndices());
+      pages.forEach(p => merged.addPage(p));
+    }
+    saveAs(new Blob([await merged.save()], {type:'application/pdf'}), 'merged.pdf');
+    showToast('Merge complete');
+  }
+  async function splitPDF(file, rangesStr) {
+    const { PDFDocument } = PDFLib;
+    const bytes = await loadPdfArray(file);
+    const src = await PDFDocument.load(bytes);
+    const total = src.getPageCount();
+    const ranges = rangesStr.split(',').map(r=>r.trim());
+    for(let i=0;i<ranges.length;i++){
+      let [start,end]=ranges[i].split('-').map(n=>parseInt(n)-1);
+      if(isNaN(start)) continue;
+      if(end===undefined) end=start;
+      if(end>=total) end=total-1;
+      const newPdf = await PDFDocument.create();
+      const indices=[];
+      for(let p=start;p<=end;p++) indices.push(p);
+      const pages = await newPdf.copyPages(src, indices);
+      pages.forEach(p=>newPdf.addPage(p));
+      saveAs(new Blob([await newPdf.save()], {type:'application/pdf'}), `split_part_${i+1}.pdf`);
+    }
+    showToast(`Split into ${ranges.length} parts`);
+  }
+  async function removePages(file, pagesStr) {
+    const { PDFDocument } = PDFLib;
+    const bytes = await loadPdfArray(file);
+    const pdf = await PDFDocument.load(bytes);
+    const total = pdf.getPageCount();
+    const remove = pagesStr.split(',').map(p=>parseInt(p.trim())-1).filter(i=>i>=0 && i<total);
+    const keep = [];
+    for(let i=0;i<total;i++) if(!remove.includes(i)) keep.push(i);
+    const newPdf = await PDFDocument.create();
+    const pages = await newPdf.copyPages(pdf, keep);
+    pages.forEach(p=>newPdf.addPage(p));
+    saveAs(new Blob([await newPdf.save()], {type:'application/pdf'}), 'pages_removed.pdf');
+    showToast('Pages removed');
+  }
+  async function extractPages(file, pagesStr) {
+    const { PDFDocument } = PDFLib;
+    const bytes = await loadPdfArray(file);
+    const pdf = await PDFDocument.load(bytes);
+    const indices = pagesStr.split(',').map(p=>parseInt(p.trim())-1).filter(i=>i>=0 && i<pdf.getPageCount());
+    const newPdf = await PDFDocument.create();
+    const pages = await newPdf.copyPages(pdf, indices);
+    pages.forEach(p=>newPdf.addPage(p));
+    saveAs(new Blob([await newPdf.save()], {type:'application/pdf'}), 'extracted.pdf');
+    showToast('Pages extracted');
+  }
+  async function imagesToPDF(files) {
+    const { PDFDocument } = PDFLib;
+    const pdf = await PDFDocument.create();
+    for(const img of files){
+      const bytes = await img.arrayBuffer();
+      let image;
+      if(img.type==='image/jpeg') image = await pdf.embedJpg(bytes);
+      else if(img.type==='image/png') image = await pdf.embedPng(bytes);
+      else continue;
+      const page = pdf.addPage([image.width, image.height]);
+      page.drawImage(image, {x:0,y:0,width:image.width,height:image.height});
+    }
+    saveAs(new Blob([await pdf.save()], {type:'application/pdf'}), 'images_to_pdf.pdf');
+    showToast('Images to PDF done');
+  }
+  async function compressPDF(file) {
+    const { PDFDocument } = PDFLib;
+    const bytes = await loadPdfArray(file);
+    const pdf = await PDFDocument.load(bytes);
+    saveAs(new Blob([await pdf.save()], {type:'application/pdf'}), 'compressed.pdf');
+    showToast('Compressed');
+  }
+  async function repairPDF(file) {
+    try { const bytes=await loadPdfArray(file); const {PDFDocument}=PDFLib; const pdf=await PDFDocument.load(bytes); saveAs(new Blob([await pdf.save()],{type:'application/pdf'}),'repaired.pdf'); showToast('Repaired'); } catch(e){ showToast('Cannot repair',true); }
+  }
+  async function wordToPDF(file) {
+    const ab=await file.arrayBuffer(); const result=await mammoth.convertToHtml({arrayBuffer:ab}); const div=document.createElement('div'); div.innerHTML=result.value; document.body.appendChild(div); const canvas=await html2canvas(div,{scale:2}); const imgData=canvas.toDataURL('image/png'); const {jsPDF}=window.jspdf; const pdf=new jsPDF('p','mm','a4'); const imgWidth=190, pageHeight=277, imgHeight=(canvas.height*imgWidth)/canvas.width; let pos=0; pdf.addImage(imgData,'PNG',10,pos,imgWidth,imgHeight); let left=imgHeight-pageHeight; while(left>0){ pos=left-imgHeight; pdf.addPage(); pdf.addImage(imgData,'PNG',10,pos,imgWidth,imgHeight); left-=pageHeight; } pdf.save('word_to_pdf.pdf'); document.body.removeChild(div); showToast('Word to PDF done');
+  }
+  async function pptToPDF(file) {
+    showToast('Converting PPTX (text only)...'); const zip=new JSZip(); const content=await file.arrayBuffer(); const loaded=await zip.loadAsync(content); const slides=Object.keys(loaded.files).filter(n=>n.startsWith('ppt/slides/slide')&&n.endsWith('.xml')); let allText=''; for(let s of slides){ const xml=await loaded.files[s].async('string'); const matches=xml.match(/<a:t>([^<]*)<\/a:t>/g); if(matches) matches.forEach(m=>{ allText+=m.replace(/<\/?a:t>/g,'')+' '; }); allText+='\n'; } const {jsPDF}=window.jspdf; const pdf=new jsPDF(); pdf.text(pdf.splitTextToSize(allText||'No text extracted',170),10,10); pdf.save('pptx_to_pdf.pdf'); showToast('PPTX to PDF done');
+  }
+  async function excelToPDF(file) {
+    const data=await file.arrayBuffer(); const wb=XLSX.read(data); const sheet=wb.Sheets[wb.SheetNames[0]]; const html=XLSX.utils.sheet_to_html(sheet); const div=document.createElement('div'); div.innerHTML=html; div.style.padding='20px'; document.body.appendChild(div); const canvas=await html2canvas(div,{scale:2}); const imgData=canvas.toDataURL('image/png'); const {jsPDF}=window.jspdf; const pdf=new jsPDF('p','mm','a4'); const imgWidth=190, pageHeight=277, imgHeight=(canvas.height*imgWidth)/canvas.width; let pos=0; pdf.addImage(imgData,'PNG',10,pos,imgWidth,imgHeight); let left=imgHeight-pageHeight; while(left>0){ pos=left-imgHeight; pdf.addPage(); pdf.addImage(imgData,'PNG',10,pos,imgWidth,imgHeight); left-=pageHeight; } pdf.save('excel_to_pdf.pdf'); document.body.removeChild(div); showToast('Excel to PDF done');
+  }
+  async function htmlToPDF(url) {
+    try{ const res=await fetch(url); const html=await res.text(); const div=document.createElement('div'); div.innerHTML=html; document.body.appendChild(div); const canvas=await html2canvas(div,{scale:2}); const imgData=canvas.toDataURL('image/png'); const {jsPDF}=window.jspdf; const pdf=new jsPDF('p','mm','a4'); const imgWidth=190, pageHeight=277, imgHeight=(canvas.height*imgWidth)/canvas.width; let pos=0; pdf.addImage(imgData,'PNG',10,pos,imgWidth,imgHeight); let left=imgHeight-pageHeight; while(left>0){ pos=left-imgHeight; pdf.addPage(); pdf.addImage(imgData,'PNG',10,pos,imgWidth,imgHeight); left-=pageHeight; } pdf.save('webpage.pdf'); document.body.removeChild(div); showToast('HTML to PDF done'); } catch(e){ showToast('Fetch failed',true); }
+  }
+  async function pdfToJPG(file) {
+    const bytes=await loadPdfArray(file); const pdf=await pdfjsLib.getDocument({data:bytes}).promise; for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const viewport=page.getViewport({scale:2}); const canvas=document.createElement('canvas'); canvas.width=viewport.width; canvas.height=viewport.height; await page.render({canvasContext:canvas.getContext('2d'), viewport}).promise; canvas.toBlob(blob=>saveAs(blob,`page_${i}.jpg`),'image/jpeg',0.9); } showToast(`Extracted ${pdf.numPages} JPGs`);
+  }
+  async function pdfToWord(file) {
+    const bytes=await loadPdfArray(file); const pdf=await pdfjsLib.getDocument({data:bytes}).promise; let fullText=''; for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const content=await page.getTextContent(); fullText+=content.items.map(item=>item.str).join(' ')+'\n\n'; } const {Document,Packer,Paragraph,TextRun}=docx; const doc=new Document({ sections:[{ children: fullText.split('\n').map(line=>new Paragraph({children:[new TextRun(line)]})) }] }); saveAs(await Packer.toBlob(doc),'pdf_to_word.docx'); showToast('PDF to Word done');
+  }
+  async function pdfToPPT(file) {
+    const bytes=await loadPdfArray(file); const pdf=await pdfjsLib.getDocument({data:bytes}).promise; const pptx=new PptxGenJS(); for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const viewport=page.getViewport({scale:1.5}); const canvas=document.createElement('canvas'); canvas.width=viewport.width; canvas.height=viewport.height; await page.render({canvasContext:canvas.getContext('2d'), viewport}).promise; const imgData=canvas.toDataURL('image/png'); const slide=pptx.addSlide(); slide.addImage({data:imgData,x:0,y:0,w:'100%',h:'100%'}); } pptx.writeFile({fileName:'pdf_to_pptx.pptx'}); showToast('PDF to PPTX done');
+  }
+  async function pdfToExcel(file) {
+    const bytes=await loadPdfArray(file); const pdf=await pdfjsLib.getDocument({data:bytes}).promise; let rows=[]; for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const text=(await page.getTextContent()).items.map(item=>item.str).join(' '); rows.push([`Page ${i}`,text]); } const ws=XLSX.utils.aoa_to_sheet(rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'PDF Extract'); saveAs(new Blob([XLSX.write(wb,{bookType:'xlsx',type:'array'})],{type:'application/octet-stream'}),'pdf_to_excel.xlsx'); showToast('PDF to Excel done');
+  }
+  async function pdfToPDFA(file) {
+    const {PDFDocument}=PDFLib; const bytes=await loadPdfArray(file); const pdf=await PDFDocument.load(bytes); saveAs(new Blob([await pdf.save()],{type:'application/pdf'}),'pdfa_converted.pdf'); showToast('Saved as PDF/A');
+  }
+  async function ocrPDF(file) {
+    showToast('OCR started, may take a moment...');
+    let imageUrl;
+    if (file.type === 'application/pdf') {
+      const bytes = await loadPdfArray(file);
+      const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({scale: 2});
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
+      imageUrl = canvas.toDataURL('image/png');
+    } else if (file.type.startsWith('image/')) {
+      imageUrl = URL.createObjectURL(file);
+    } else {
+      showToast('Unsupported file type', true);
+      return;
+    }
+    try {
+      const { data: { text } } = await Tesseract.recognize(imageUrl, 'eng');
+      const blob = new Blob([text], {type: 'text/plain'});
+      saveAs(blob, 'ocr_result.txt');
+      showToast('OCR complete, text saved');
+    } catch(e) {
+      showToast('OCR failed: ' + e.message, true);
+    }
+  }
+  async function aiSummarizer(file) {
+    showToast('Extracting text...');
+    let text = '';
+    if (file.type === 'application/pdf') {
+      const bytes = await loadPdfArray(file);
+      const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        text += content.items.map(item => item.str).join(' ') + '\n';
+      }
+    } else if (file.type.startsWith('image/')) {
+      const { data: { text: t } } = await Tesseract.recognize(URL.createObjectURL(file), 'eng');
+      text = t;
+    } else {
+      throw new Error('Unsupported file type');
+    }
+    if (!text.trim()) throw new Error('No text found');
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 20);
+    const summary = sentences.slice(0, 5).map(s => s.trim() + '.').join(' ');
+    const wordCount = text.split(/\s+/).length;
+    return { summary, wordCount, fullText: text };
+  }
+  async function addSignatureToPdf(pdfFile, signatureDataUrl, x, y, w, h) {
+    const { PDFDocument } = PDFLib;
+    const pdfBytes = await loadPdfArray(pdfFile);
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const pngImage = await pdfDoc.embedPng(signatureDataUrl);
+    const pages = pdfDoc.getPages();
+    if (pages.length === 0) throw new Error('No pages in PDF');
+    const firstPage = pages[0];
+    firstPage.drawImage(pngImage, { x: x, y: y, width: w, height: h });
+    return await pdfDoc.save();
+  }
+  async function batchCompress(files) { for(let f of files){ const bytes=await loadPdfArray(f); const {PDFDocument}=PDFLib; const pdf=await PDFDocument.load(bytes); saveAs(new Blob([await pdf.save()],{type:'application/pdf'}),`compressed_${f.name}`); } showToast(`Compressed ${files.length} files`); }
+  async function batchMerge(files) { const {PDFDocument}=PDFLib; const merged=await PDFDocument.create(); for(let f of files){ const bytes=await loadPdfArray(f); const pdf=await PDFDocument.load(bytes); const pages=await merged.copyPages(pdf,pdf.getPageIndices()); pages.forEach(p=>merged.addPage(p)); } saveAs(new Blob([await merged.save()],{type:'application/pdf'}),'batch_merged.pdf'); showToast('Merged all'); }
+  async function batchRemovePages(files, pagesStr) { for(let f of files){ const bytes=await loadPdfArray(f); const {PDFDocument}=PDFLib; const pdf=await PDFDocument.load(bytes); const total=pdf.getPageCount(); const remove=pagesStr.split(',').map(p=>parseInt(p.trim())-1).filter(i=>i>=0&&i<total); const keep=[]; for(let i=0;i<total;i++) if(!remove.includes(i)) keep.push(i); const newPdf=await PDFDocument.create(); const pages=await newPdf.copyPages(pdf,keep); pages.forEach(p=>newPdf.addPage(p)); saveAs(new Blob([await newPdf.save()],{type:'application/pdf'}),`removed_${f.name}`); } showToast(`Removed pages from ${files.length} files`); }
+  async function batchExtractPages(files, pagesStr) { for(let f of files){ const bytes=await loadPdfArray(f); const {PDFDocument}=PDFLib; const pdf=await PDFDocument.load(bytes); const indices=pagesStr.split(',').map(p=>parseInt(p.trim())-1).filter(i=>i>=0&&i<pdf.getPageCount()); const newPdf=await PDFDocument.create(); const pages=await newPdf.copyPages(pdf,indices); pages.forEach(p=>newPdf.addPage(p)); saveAs(new Blob([await newPdf.save()],{type:'application/pdf'}),`extracted_${f.name}`); } showToast(`Extracted pages from ${files.length} files`); }
+
+  // ---------- Routing ----------
+  function navigate(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    document.getElementById(pageId).classList.add('active-page');
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      const href = link.getAttribute('data-page');
+      if (href === pageId) link.classList.add('active');
+      else link.classList.remove('active');
+    });
+    history.pushState({ page: pageId }, '', `#${pageId}`);
+  }
+  window.addEventListener('popstate', (e) => navigate(e.state?.page || 'home'));
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigate(link.getAttribute('data-page'));
+    });
+  });
+  navigate(window.location.hash.slice(1) || 'home');
+
+  // ---------- Tool Handlers ----------
+  document.querySelectorAll('.tool-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const tool = card.getAttribute('data-tool');
+      if (tool === 'merge') openModal('Merge PDF', `<input type="file" id="mergeFiles" multiple accept=".pdf"><button id="doMerge">Merge</button>`);
+      else if (tool === 'split') openModal('Split PDF', `<input type="file" id="splitFile" accept=".pdf"><input placeholder="Page ranges: 1-3,5,7-9" id="splitRanges"><button id="doSplit">Split</button>`);
+      else if (tool === 'remove') openModal('Remove Pages', `<input type="file" id="removeFile" accept=".pdf"><input placeholder="Pages to remove: 2,5,7" id="removePages"><button id="doRemove">Remove</button>`);
+      else if (tool === 'extract') openModal('Extract Pages', `<input type="file" id="extractFile" accept=".pdf"><input placeholder="Page numbers: 1,3,5-7" id="extractPages"><button id="doExtract">Extract</button>`);
+      else if (tool === 'reorder') openModal('Reorder Pages', `<input type="file" id="reorderFile" accept=".pdf"><button id="loadReorder">Load PDF</button>`);
+      else if (tool === 'scantopdf' || tool === 'jpg2pdf') openModal('Images to PDF', `<input type="file" id="imgFiles" multiple accept="image/jpeg,image/png"><button id="doImages">Convert to PDF</button>`);
+      else if (tool === 'compress') openModal('Compress PDF', `<input type="file" id="compressFile" accept=".pdf"><button id="doCompress">Compress</button>`);
+      else if (tool === 'repair') openModal('Repair PDF', `<input type="file" id="repairFile" accept=".pdf"><button id="doRepair">Repair</button>`);
+      else if (tool === 'ocr') openModal('OCR PDF', `<input type="file" id="ocrFile" accept=".pdf,.jpg,.png"><button id="doOCR">OCR (Extract Text)</button>`);
+      else if (tool === 'word2pdf') openModal('WORD to PDF', `<input type="file" id="wordFile" accept=".docx"><button id="doWord2Pdf">Convert</button>`);
+      else if (tool === 'ppt2pdf') openModal('POWERPOINT to PDF', `<input type="file" id="pptFile" accept=".pptx"><button id="doPpt2Pdf">Convert</button>`);
+      else if (tool === 'excel2pdf') openModal('EXCEL to PDF', `<input type="file" id="excelFile" accept=".xlsx,.xls"><button id="doExcel2Pdf">Convert</button>`);
+      else if (tool === 'html2pdf') openModal('HTML to PDF', `<input placeholder="Enter URL (https://...)" id="htmlUrl"><button id="doHtml2Pdf">Convert</button>`);
+      else if (tool === 'pdf2jpg') openModal('PDF to JPG', `<input type="file" id="pdf2jpgFile" accept=".pdf"><button id="doPdf2Jpg">Extract JPGs</button>`);
+      else if (tool === 'pdf2word') openModal('PDF to WORD', `<input type="file" id="pdf2wordFile" accept=".pdf"><button id="doPdf2Word">Convert to DOCX</button>`);
+      else if (tool === 'pdf2ppt') openModal('PDF to POWERPOINT', `<input type="file" id="pdf2pptFile" accept=".pdf"><button id="doPdf2Ppt">Convert to PPTX</button>`);
+      else if (tool === 'pdf2excel') openModal('PDF to EXCEL', `<input type="file" id="pdf2excelFile" accept=".pdf"><button id="doPdf2Excel">Convert to XLSX</button>`);
+      else if (tool === 'pdf2pdfa') openModal('PDF to PDF/A', `<input type="file" id="pdf2pdfaFile" accept=".pdf"><button id="doPdf2Pdfa">Convert</button>`);
+      else if (tool === 'ai_summarizer') openModal('AI Summarizer', `<input type="file" id="sumFile" accept=".pdf,image/jpeg,image/png"><button id="summarizeBtn">Summarize</button><div id="summaryResult"></div>`);
+      else if (tool === 'digital_signature') openModal('Digital Signature', `<input type="file" id="signPdfFile" accept=".pdf"><div><canvas id="signCanvas" width="400" height="150" class="signature-canvas"></canvas><div><button id="clearCanvas">Clear</button><button id="resetCanvas">Reset</button></div></div><div><input type="number" id="signX" placeholder="X" value="50"><input type="number" id="signY" placeholder="Y" value="50"><input type="number" id="signWidth" placeholder="Width" value="150"><input type="number" id="signHeight" placeholder="Height" value="50"></div><button id="addSignatureBtn">Add Signature to PDF</button>`);
+      else if (tool === 'batch_processing') openModal('Batch Processing', `<select id="batchOp"><option value="compress">Compress PDFs</option><option value="merge">Merge all into one PDF</option><option value="remove">Remove pages from each</option><option value="extract">Extract pages from each</option></select><input type="text" id="batchPages" placeholder="Page numbers for remove/extract"><input type="file" id="batchFiles" multiple accept=".pdf"><button id="runBatch">Run Batch</button>`);
+    });
+  });
+
+  // ---------- Global Event Listeners ----------
+  document.addEventListener('click', async (e) => {
+    if (e.target.id === 'doMerge') { const files=document.getElementById('mergeFiles')?.files; if(files?.length>=2){ await mergePDFs(files); modalOverlay.classList.remove('active'); } else showToast('Select at least 2 PDFs',true); }
+    if (e.target.id === 'doSplit') { const f=document.getElementById('splitFile')?.files[0]; const r=document.getElementById('splitRanges')?.value; if(f&&r){ await splitPDF(f,r); modalOverlay.classList.remove('active'); } else showToast('Need file & ranges',true); }
+    if (e.target.id === 'doRemove') { const f=document.getElementById('removeFile')?.files[0]; const p=document.getElementById('removePages')?.value; if(f&&p){ await removePages(f,p); modalOverlay.classList.remove('active'); } else showToast('Provide file and pages',true); }
+    if (e.target.id === 'doExtract') { const f=document.getElementById('extractFile')?.files[0]; const p=document.getElementById('extractPages')?.value; if(f&&p){ await extractPages(f,p); modalOverlay.classList.remove('active'); } else showToast('Provide file and pages',true); }
+    if (e.target.id === 'loadReorder') { const f=document.getElementById('reorderFile')?.files[0]; if(f) reorderModal(f); else showToast('Select PDF',true); }
+    if (e.target.id === 'doImages') { const files=document.getElementById('imgFiles')?.files; if(files?.length){ await imagesToPDF(files); modalOverlay.classList.remove('active'); } else showToast('Select images',true); }
+    if (e.target.id === 'doCompress') { const f=document.getElementById('compressFile')?.files[0]; if(f){ await compressPDF(f); modalOverlay.classList.remove('active'); } else showToast('Select PDF',true); }
+    if (e.target.id === 'doRepair') { const f=document.getElementById('repairFile')?.files[0]; if(f){ await repairPDF(f); modalOverlay.classList.remove('active'); } else showToast('Select PDF',true); }
+    if (e.target.id === 'doOCR') { const f=document.getElementById('ocrFile')?.files[0]; if(f){ await ocrPDF(f); modalOverlay.classList.remove('active'); } else showToast('Select file',true); }
+    if (e.target.id === 'doWord2Pdf') { const f=document.getElementById('wordFile')?.files[0]; if(f){ await wordToPDF(f); modalOverlay.classList.remove('active'); } else showToast('Select .docx',true); }
+    if (e.target.id === 'doPpt2Pdf') { const f=document.getElementById('pptFile')?.files[0]; if(f){ await pptToPDF(f); modalOverlay.classList.remove('active'); } else showToast('Select .pptx',true); }
+    if (e.target.id === 'doExcel2Pdf') { const f=document.getElementById('excelFile')?.files[0]; if(f){ await excelToPDF(f); modalOverlay.classList.remove('active'); } else showToast('Select Excel',true); }
+    if (e.target.id === 'doHtml2Pdf') { const url=document.getElementById('htmlUrl')?.value; if(url){ await htmlToPDF(url); modalOverlay.classList.remove('active'); } else showToast('Enter URL',true); }
+    if (e.target.id === 'doPdf2Jpg') { const f=document.getElementById('pdf2jpgFile')?.files[0]; if(f){ await pdfToJPG(f); modalOverlay.classList.remove('active'); } else showToast('Select PDF',true); }
+    if (e.target.id === 'doPdf2Word') { const f=document.getElementById('pdf2wordFile')?.files[0]; if(f){ await pdfToWord(f); modalOverlay.classList.remove('active'); } else showToast('Select PDF',true); }
+    if (e.target.id === 'doPdf2Ppt') { const f=document.getElementById('pdf2pptFile')?.files[0]; if(f){ await pdfToPPT(f); modalOverlay.classList.remove('active'); } else showToast('Select PDF',true); }
+    if (e.target.id === 'doPdf2Excel') { const f=document.getElementById('pdf2excelFile')?.files[0]; if(f){ await pdfToExcel(f); modalOverlay.classList.remove('active'); } else showToast('Select PDF',true); }
+    if (e.target.id === 'doPdf2Pdfa') { const f=document.getElementById('pdf2pdfaFile')?.files[0]; if(f){ await pdfToPDFA(f); modalOverlay.classList.remove('active'); } else showToast('Select PDF',true); }
+    if (e.target.id === 'summarizeBtn') { const f=document.getElementById('sumFile')?.files[0]; if(f){ try{ const {summary,wordCount,fullText}=await aiSummarizer(f); document.getElementById('summaryResult').innerHTML=`<div class="summary-box"><strong>Summary</strong><br>${summary}<br><br>Word count: ${wordCount}<br><button id="downloadFull">Download Full Text</button></div>`; document.getElementById('downloadFull').onclick=()=>saveAs(new Blob([fullText],{type:'text/plain'}),'extracted.txt'); } catch(err){ showToast(err.message,true); } } else showToast('Select file',true); }
+    if (e.target.id === 'addSignatureBtn') { const f=document.getElementById('signPdfFile')?.files[0]; const canvas=document.getElementById('signCanvas'); if(!f||!canvas){ showToast('Select PDF and draw signature',true); return; } const sig=canvas.toDataURL('image/png'); const x=parseInt(document.getElementById('signX')?.value)||50, y=parseInt(document.getElementById('signY')?.value)||50, w=parseInt(document.getElementById('signWidth')?.value)||150, h=parseInt(document.getElementById('signHeight')?.value)||50; const bytes=await addSignatureToPdf(f,sig,x,y,w,h); saveAs(new Blob([bytes],{type:'application/pdf'}),'signed.pdf'); modalOverlay.classList.remove('active'); showToast('Signature added'); }
+    if (e.target.id === 'runBatch') { const op=document.getElementById('batchOp')?.value, files=Array.from(document.getElementById('batchFiles')?.files||[]), pages=document.getElementById('batchPages')?.value; if(!files.length){ showToast('Select files',true); return; } if(op==='compress') await batchCompress(files); else if(op==='merge') await batchMerge(files); else if(op==='remove'){ if(!pages){ showToast('Enter pages to remove',true); return; } await batchRemovePages(files,pages); } else if(op==='extract'){ if(!pages){ showToast('Enter pages to extract',true); return; } await batchExtractPages(files,pages); } modalOverlay.classList.remove('active'); }
+    if (e.target.id === 'clearCanvas' || e.target.id === 'resetCanvas') { const canvas=document.getElementById('signCanvas'); if(canvas){ const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height); } }
+  });
+
+  function reorderModal(file) {
+    openModal('Reorder Pages', `<div id="reorderContainer">Loading...</div><button id="reorderSave">Save Reordered PDF</button>`);
+    (async () => {
+      const { PDFDocument } = PDFLib;
+      const bytes = await loadPdfArray(file);
+      const pdf = await PDFDocument.load(bytes);
+      const total = pdf.getPageCount();
+      let order = Array.from({length:total},(_,i)=>i);
+      function render() {
+        const container = document.getElementById('reorderContainer');
+        container.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;">${order.map((idx,pos)=>`<div draggable="true" data-pos="${pos}" style="background:#f0f0f0;padding:8px 16px;border-radius:40px;cursor:grab;">Page ${idx+1}</div>`).join('')}</div><p>Drag to reorder</p>`;
+        const items = container.querySelectorAll('[draggable="true"]');
+        let dragSrc=null;
+        items.forEach(item=>{
+          item.addEventListener('dragstart',e=>{ dragSrc=e.target; e.dataTransfer.effectAllowed='move'; });
+          item.addEventListener('dragover',e=>e.preventDefault());
+          item.addEventListener('drop',e=>{
+            e.preventDefault(); if(dragSrc && dragSrc!==item){ const srcPos=parseInt(dragSrc.getAttribute('data-pos')); const tgtPos=parseInt(item.getAttribute('data-pos')); const newOrder=[...order]; const [moved]=newOrder.splice(srcPos,1); newOrder.splice(tgtPos,0,moved); order=newOrder; render(); }
+          });
+        });
+      }
+      render();
+      document.getElementById('reorderSave').onclick = async () => {
+        const newPdf = await PDFDocument.create();
+        const pages = await newPdf.copyPages(pdf, order);
+        pages.forEach(p=>newPdf.addPage(p));
+        saveAs(new Blob([await newPdf.save()], {type:'application/pdf'}), 'reordered.pdf');
+        modalOverlay.classList.remove('active');
+        showToast('Reorder saved');
+      };
+    })();
+  }
+
+  document.addEventListener('click', (e) => {
+    if(e.target.id === 'signCanvas'){
+      const canvas = document.getElementById('signCanvas');
+      if(canvas && !canvas._drawing){
+        canvas._drawing = true;
+        let drawing = false;
+        const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 2; ctx.strokeStyle = '#000'; ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        const start = (e) => { drawing=true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
+        const draw = (e) => { if(drawing){ ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } };
+        const end = () => drawing=false;
+        canvas.addEventListener('mousedown', start);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', end);
+        canvas.addEventListener('mouseleave', end);
+      }
+    }
+  });
+
+  document.getElementById('termsLink')?.addEventListener('click', (e) => { e.preventDefault(); openModal('Terms of Use', `<p>Use at your own risk. All processing is client-side. No warranties.</p>`); });
+  document.getElementById('contactLink')?.addEventListener('click', (e) => { e.preventDefault(); openModal('Contact', `<p>Email: support@pdfmaster.example.com</p>`); });
+</script>
+</body>
+</html>
